@@ -38,9 +38,12 @@ private:
 int main(int, char**)
 {
 	namedWindow(WindowName);
-	//VideoCapture VideoStream("C:/Users/harsh/Desktop/v45_112_Life_Of_Pi_Lying_Actress_tilts_her_head_talking.mp4");
-	VideoCapture VideoStream(0);
-
+	VideoCapture VideoStream("C:/Users/harsh/Desktop/v45_112_Life_Of_Pi_Lying_Actress_tilts_her_head_talking.mp4");
+	//VideoCapture VideoStream(0);
+	int h = VideoStream.get(cv::CAP_PROP_FRAME_HEIGHT);
+	int w = VideoStream.get(cv::CAP_PROP_FRAME_WIDTH);
+	int codec = VideoWriter::fourcc('M', 'J', 'P', 'G');
+	VideoWriter video("outcpp_inital_faciallandmarks.avi", codec, 10, Size(w, h));
 	if (!VideoStream.isOpened())
 	{
 		printf("Error: Cannot open video stream from camera\n");
@@ -81,19 +84,18 @@ int main(int, char**)
 	{
 		VideoStream >> ReferenceFrame;
 		cvtColor(ReferenceFrame, GrayFrame, COLOR_BGR2GRAY);
-			Detector.process(GrayFrame);
-			Detector.getObjects(Faces);
+		Detector.process(GrayFrame);
+		Detector.getObjects(Faces);
 
-			for (size_t i = 0; i < Faces.size(); i++)
-			{
-				rectangle(ReferenceFrame, Faces[i], Scalar(0, 255, 0));
-			}
-
-			imshow(WindowName, ReferenceFrame);
+		for (size_t i = 0; i < Faces.size(); i++)
+		{
+			rectangle(ReferenceFrame, Faces[i], Scalar(0, 255, 0));
+		}
+		video.write(ReferenceFrame);
+		imshow(WindowName, ReferenceFrame);
 	} while (waitKey(30) < 0);
 
 	Detector.stop();
 
 	return 0;
 }
-
